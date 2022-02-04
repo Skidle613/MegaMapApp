@@ -3,6 +3,7 @@ import sys
 
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtWidgets import QMainWindow, QLabel, QApplication
+from PyQt5.QtCore import Qt
 import requests
 
 
@@ -11,18 +12,31 @@ class Map(QMainWindow):
         super().__init__()
         self.setGeometry(100, 100, 650, 450)
         self.setWindowTitle('MegsMapApp')
-        self.initUI()
-
-    def initUI(self):
+        self.z = 10
         self.label = QLabel(self)
         self.label.move(0, 0)
         self.label.resize(650, 450)
+        self.load_map()
 
+    def closeEvent(self, event):
+        os.remove('map.png')
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_PageDown:
+            if self.z > 0:
+                self.z -= 1
+                self.load_map()
+        elif event.key() == Qt.Key_PageUp:
+            if self.z < 17:
+                self.z += 1
+                self.load_map()
+
+    def load_map(self):
         map_params = {
             "ll": '40.496638,52.895678',
             "l": "map",
             'size': '650,450',
-            'z': '10'
+            'z': self.z
 
             # "pt": f'{centre},pm2dol1'
         }
@@ -37,9 +51,6 @@ class Map(QMainWindow):
             file.write(response.content)
         self.pixmap = QPixmap('map.png')
         self.label.setPixmap(self.pixmap)
-
-    def closeEvent(self, event):
-        os.remove('map.png')
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ import os
 import sys
 
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QLabel, QApplication
+from PyQt5.QtWidgets import QMainWindow, QLabel, QApplication, QLineEdit
 from PyQt5.QtCore import Qt
 import requests
 
@@ -20,6 +20,9 @@ class Map(QMainWindow):
         self.label = QLabel(self)
         self.label.move(0, 0)
         self.label.resize(650, 450)
+        # self.lineEdit = QLineEdit(self)
+        # self.lineEditdit.move(650, 0)
+        # self.lineEdit.resize()
         self.load_map()
 
     def closeEvent(self, event):
@@ -35,17 +38,33 @@ class Map(QMainWindow):
                 self.z += 1
                 self.load_map()
         if event.key() == Qt.Key_Up:
-            self.y_cor += 1 / (self.z ** 2) * (17.3 - self.z)
-            self.load_map()
+            old = self.y_cor
+            self.y_cor += 1 / ((self.z + 0.000000001) ** 2) * (17.3 - self.z)
+            try:
+                self.load_map()
+            except Exception:
+                self.y_cor = old
         elif event.key() == Qt.Key_Down:
-            self.y_cor -= 1 / (self.z ** 2) * (17.3 - self.z)
-            self.load_map()
+            old = self.y_cor
+            self.y_cor -= 1 / ((self.z + 0.000000001) ** 2) * (17.3 - self.z)
+            try:
+                self.load_map()
+            except Exception:
+                self.y_cor = old
         elif event.key() == Qt.Key_Left:
-            self.x_cor -= 1 / (self.z ** 2) * (17.3 - self.z)
-            self.load_map()
+            old = self.x_cor
+            self.x_cor -= 1 / ((self.z + 0.000000001) ** 2) * (17.3 - self.z)
+            try:
+                self.load_map()
+            except Exception:
+                self.x_cor = old
         elif event.key() == Qt.Key_Right:
-            self.x_cor += 1 / (self.z ** 2) * (17.3 - self.z)
-            self.load_map()
+            old = self.x_cor
+            self.x_cor += 1 / ((self.z + 0.000000001) ** 2) * (17.3 - self.z)
+            try:
+                self.load_map()
+            except Exception:
+                self.x_cor = old
         if event.key() == Qt.Key_1:
             self.l = 0
             self.load_map()
@@ -71,15 +90,18 @@ class Map(QMainWindow):
             print("Ошибка выполнения запроса:")
             print(response.url)
             print("Http статус:", response.status_code, "(", response.reason, ")")
-            sys.exit(1)
+            raise Exception('все пошло не так')
         with open('map.png', 'wb') as file:
             file.write(response.content)
         self.pixmap = QPixmap('map.png')
         self.label.setPixmap(self.pixmap)
 
+def except_hook(cls, exception, traceback):
+    sys.__excepthook__(cls, exception, traceback)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Map()
     ex.show()
+    sys.excepthook = except_hook
     sys.exit(app.exec())

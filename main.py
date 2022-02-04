@@ -13,6 +13,8 @@ class Map(QMainWindow):
         self.setGeometry(100, 100, 650, 450)
         self.setWindowTitle('MegsMapApp')
         self.z = 10
+        self.x_cor = 40.496638
+        self.y_cor = 52.895678
         self.label = QLabel(self)
         self.label.move(0, 0)
         self.label.resize(650, 450)
@@ -30,10 +32,30 @@ class Map(QMainWindow):
             if self.z < 17:
                 self.z += 1
                 self.load_map()
+        if event.key() == Qt.Key_Up:
+            self.y_cor += (170 / self.z) * 0.005 + (8.5 - self.z) * 0.01
+            if self.z <= 6:
+                self.y_cor += ((170 / self.z) * 0.005 + (8.5 - self.z) * 0.01) * 2
+            self.load_map()
+        elif event.key() == Qt.Key_Down:
+            self.y_cor -= (170 / self.z) * 0.005 + (8.5 - self.z) * 0.01
+            if self.z <= 6:
+                self.y_cor -= ((170 / self.z) * 0.005 + (8.5 - self.z) * 0.01) * 2
+            self.load_map()
+        elif event.key() == Qt.Key_Left:
+            self.x_cor -= (170 / self.z) * 0.005 + (8.5 - self.z) * 0.01
+            if self.z <= 6:
+                self.x_cor -= ((170 / self.z) * 0.005 + (8.5 - self.z) * 0.01) * 2
+            self.load_map()
+        elif event.key() == Qt.Key_Right:
+            self.x_cor += (170 / self.z) * 0.005 + (8.5 - self.z) * 0.01
+            if self.z <= 6:
+                self.x_cor += ((170 / self.z) * 0.005 + (8.5 - self.z) * 0.01) * 2
+            self.load_map()
 
     def load_map(self):
         map_params = {
-            "ll": '40.496638,52.895678',
+            "ll": f'{self.x_cor},{self.y_cor}',
             "l": "map",
             'size': '650,450',
             'z': self.z

@@ -15,6 +15,8 @@ class Map(QMainWindow):
         self.z = 10
         self.x_cor = 40.496638
         self.y_cor = 52.895678
+        self.mods = ['map', 'sat', 'sat,skl']
+        self.l = 0
         self.label = QLabel(self)
         self.label.move(0, 0)
         self.label.resize(650, 450)
@@ -33,30 +35,31 @@ class Map(QMainWindow):
                 self.z += 1
                 self.load_map()
         if event.key() == Qt.Key_Up:
-            self.y_cor += (170 / self.z) * 0.005 + (8.5 - self.z) * 0.01
-            if self.z <= 6:
-                self.y_cor += ((170 / self.z) * 0.005 + (8.5 - self.z) * 0.01) * 2
+            self.y_cor += 1 / (self.z ** 2) * (17.3 - self.z)
             self.load_map()
         elif event.key() == Qt.Key_Down:
-            self.y_cor -= (170 / self.z) * 0.005 + (8.5 - self.z) * 0.01
-            if self.z <= 6:
-                self.y_cor -= ((170 / self.z) * 0.005 + (8.5 - self.z) * 0.01) * 2
+            self.y_cor -= 1 / (self.z ** 2) * (17.3 - self.z)
             self.load_map()
         elif event.key() == Qt.Key_Left:
-            self.x_cor -= (170 / self.z) * 0.005 + (8.5 - self.z) * 0.01
-            if self.z <= 6:
-                self.x_cor -= ((170 / self.z) * 0.005 + (8.5 - self.z) * 0.01) * 2
+            self.x_cor -= 1 / (self.z ** 2) * (17.3 - self.z)
             self.load_map()
         elif event.key() == Qt.Key_Right:
-            self.x_cor += (170 / self.z) * 0.005 + (8.5 - self.z) * 0.01
-            if self.z <= 6:
-                self.x_cor += ((170 / self.z) * 0.005 + (8.5 - self.z) * 0.01) * 2
+            self.x_cor += 1 / (self.z ** 2) * (17.3 - self.z)
+            self.load_map()
+        if event.key() == Qt.Key_1:
+            self.l = 0
+            self.load_map()
+        elif event.key() == Qt.Key_2:
+            self.l = 1
+            self.load_map()
+        elif event.key() == Qt.Key_3:
+            self.l = 2
             self.load_map()
 
     def load_map(self):
         map_params = {
             "ll": f'{self.x_cor},{self.y_cor}',
-            "l": "map",
+            "l": self.mods[self.l],
             'size': '650,450',
             'z': self.z
 

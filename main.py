@@ -2,15 +2,16 @@ import os
 import sys
 
 from PyQt5.QtGui import QPixmap
-from PyQt5.QtWidgets import QMainWindow, QLabel, QApplication, QLineEdit
+from PyQt5.QtWidgets import QMainWindow, QLabel, QApplication, QLineEdit, QPushButton
 from PyQt5.QtCore import Qt
 import requests
+from sob import size
 
 
 class Map(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.setGeometry(100, 100, 650, 450)
+        self.setGeometry(100, 100, 650, 550)
         self.setWindowTitle('MegsMapApp')
         self.z = 10
         self.x_cor = 40.496638
@@ -20,13 +21,31 @@ class Map(QMainWindow):
         self.label = QLabel(self)
         self.label.move(0, 0)
         self.label.resize(650, 450)
-        # self.lineEdit = QLineEdit(self)
-        # self.lineEditdit.move(650, 0)
-        # self.lineEdit.resize()
+        self.lineEdit = QLineEdit(self)
+        self.lineEdit.move(0, 450)
+        self.lineEdit.resize(550, 100)
+        self.pButton = QPushButton('Искать', self)
+        self.pButton.move(550, 450)
+        self.pButton.resize(100, 100)
+        self.pButton.clicked.connect(self.search_obj)
+        self.pts = []
         self.load_map()
 
     def closeEvent(self, event):
         os.remove('map.png')
+
+    def search_obj(self):
+        centre = size(self.lineEdit.text())
+        self.x_cor = centre[0]
+        self.y_cor = centre[1]
+        self.pts.append(f'{",".join([centre[0], centre[1]])},pm2dol1')
+        self.load_map()
+
+    def mousePressEvent(self, event):
+        if event.pos().x() in range(0, 551) and event.pos().y() in range(450, 551):
+            self.lineEdit.setFocus()
+        else:
+            self.lineEdit.clearFocus()
 
     def keyPressEvent(self, event):
         if event.key() == Qt.Key_PageDown:
@@ -80,9 +99,8 @@ class Map(QMainWindow):
             "ll": f'{self.x_cor},{self.y_cor}',
             "l": self.mods[self.l],
             'size': '650,450',
-            'z': self.z
-
-            # "pt": f'{centre},pm2dol1'
+            'z': self.z,
+            "pt": self.pts
         }
         map_api_server = "http://static-maps.yandex.ru/1.x/"
         response = requests.get(map_api_server, params=map_params)

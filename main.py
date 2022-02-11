@@ -36,8 +36,8 @@ class Map(QMainWindow):
 
     def search_obj(self):
         centre = size(self.lineEdit.text())
-        self.x_cor = centre[0]
-        self.y_cor = centre[1]
+        self.x_cor = float(centre[0])
+        self.y_cor = float(centre[1])
         self.pts.append(f'{",".join([centre[0], centre[1]])},pm2dol1')
         self.load_map()
 
